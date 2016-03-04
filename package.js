@@ -2,7 +2,7 @@ Package.describe({
   name: 'jcheroske:modernizr-touch',
   version: '3.3.1',
   summary: 'Modernizr with just the touch events test.',
-  git: '',
+  git: 'https://github.com/jcheroske/meteor-modernizr-touch.git',
   documentation: 'README.md'
 });
 
