@@ -1,6 +1,6 @@
 /*!
  * modernizr v3.3.1
- * Build http://modernizr.com/download?-touchevents-dontmin
+ * Build http://modernizr.com/download?-touchevents-setclasses-dontmin
  *
  * Copyright (c)
  *  Faruk Ates
@@ -23,6 +23,9 @@
  */
 
 ;(function(window, document, undefined){
+  var classes = [];
+
+
   var tests = [];
 
 
@@ -83,9 +86,6 @@
   // Overwrite name so constructor name is nicer :D
   Modernizr = new Modernizr();
 
-
-
-  var classes = [];
 
 
   /**
@@ -175,6 +175,61 @@
   ;
 
   /**
+   * docElement is a convenience wrapper to grab the root element of the document
+   *
+   * @access private
+   * @returns {HTMLElement|SVGElement} The root element of the document
+   */
+
+  var docElement = document.documentElement;
+
+
+  /**
+   * A convenience helper to check if the document we are running in is an SVG document
+   *
+   * @access private
+   * @returns {boolean}
+   */
+
+  var isSVG = docElement.nodeName.toLowerCase() === 'svg';
+
+
+  /**
+   * setClasses takes an array of class names and adds them to the root element
+   *
+   * @access private
+   * @function setClasses
+   * @param {string[]} classes - Array of class names
+   */
+
+  // Pass in an and array of class names, e.g.:
+  //  ['no-webp', 'borderradius', ...]
+  function setClasses(classes) {
+    var className = docElement.className;
+    var classPrefix = Modernizr._config.classPrefix || '';
+
+    if (isSVG) {
+      className = className.baseVal;
+    }
+
+    // Change `no-js` to `js` (independently of the `enableClasses` option)
+    // Handle classPrefix on this too
+    if (Modernizr._config.enableJSClass) {
+      var reJS = new RegExp('(^|\\s)' + classPrefix + 'no-js(\\s|$)');
+      className = className.replace(reJS, '$1' + classPrefix + 'js$2');
+    }
+
+    if (Modernizr._config.enableClasses) {
+      // Add the new classes
+      className += ' ' + classPrefix + classes.join(' ' + classPrefix);
+      isSVG ? docElement.className.baseVal = className : docElement.className = className;
+    }
+
+  }
+
+  ;
+
+  /**
    * List of property values to set for css tests. See ticket #21
    * http://git.io/vUGl4
    *
@@ -213,26 +268,6 @@
   // expose these for the plugin API. Look in the source for how to join() them against your input
   ModernizrProto._prefixes = prefixes;
 
-
-
-  /**
-   * docElement is a convenience wrapper to grab the root element of the document
-   *
-   * @access private
-   * @returns {HTMLElement|SVGElement} The root element of the document
-   */
-
-  var docElement = document.documentElement;
-
-
-  /**
-   * A convenience helper to check if the document we are running in is an SVG document
-   *
-   * @access private
-   * @returns {boolean}
-   */
-
-  var isSVG = docElement.nodeName.toLowerCase() === 'svg';
 
 
   /**
@@ -473,6 +508,9 @@
 
   // Run each test
   testRunner();
+
+  // Remove the "no-js" class if it exists
+  setClasses(classes);
 
   delete ModernizrProto.addTest;
   delete ModernizrProto.addAsyncTest;
