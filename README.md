@@ -1,4 +1,4 @@
-# Modernizr touchevents tests
+# Modernizr touchevents
 
 Modernizr build that only tests for the presence of touchscreen events support. 
 
